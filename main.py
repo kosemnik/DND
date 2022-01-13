@@ -26,7 +26,6 @@ class Specifications(Enum):
     SURVIVAL = "Выживание"
     CHEATNG = "Обман"
     BULLYING = "Запугивание"
-    PERFORMANCE = "Выступление"
     PERSUASION = "Убеждение"
     BARD = "Бард"
 
@@ -74,6 +73,29 @@ def getSpecification(specification):
     return specifications.PERSUASION
 
 
+def isSelectedHas(selected, item):
+    for i in range(len(selected)):
+        if selected[i] == item:
+            return True
+    return False
+
+
+def comboChanged(self, answer):
+    if answer == 0:
+        return
+    selected = []
+    print("!!")
+    for i in range(10):
+        if self.answers[i].currentIndex() != 0:
+            selected.insert(len(selected), self.answers[i].currentIndex())
+    for i in range(10):
+        for j in range(18):
+            if isSelectedHas(selected, j):
+                self.answers[i].model().item(j).setEnabled(False)
+            else:
+                self.answers[i].model().item(j).setEnabled(True)
+
+
 db = sqlite3.connect('Classes.db')
 cursor = db.cursor()
 
@@ -97,7 +119,7 @@ answer1 = [["Я помогу бедному созданию восстанов�
 
 answer2 = [["Дам денег в долг.", specifications.INSIGHT],
            ["Подлечу на своём скакуне, перекину бедолагу через седло и "
-           "\nгалопом унесусь в закат. Пусть попробуют догонят!", specifications.ANIMALSTREATMENT],
+            "\nгалопом унесусь в закат. Пусть попробуют догонят!", specifications.ANIMALSTREATMENT],
            ["Предложу подать апелляцию и свою помощь в ее подготовке.", specifications.HISTORY],
            ["Невиновность еще нужно доказать. Впрочем, разберусь по ситуации.", specifications.INVESTIGATION],
            ["Попробую найти компромисс.", specifications.PERSUASION],
@@ -105,34 +127,40 @@ answer2 = [["Дам денег в долг.", specifications.INSIGHT],
 
 answer3 = [["Попытаюсь уговорить отдать предмет, если не получится, то сворую его.", specifications.HANDSLEIGHT],
            ["Проберусь в его дом, незаметно возьму предмет, а затем также "
-           "\nнезаметно верну, когда потребность в нём отпадёт.", specifications.STEALTH],
+            "\nнезаметно верну, когда потребность в нём отпадёт.", specifications.STEALTH],
            ["Угощу его расслабляющим чаем из трав, которые собрал недавно, "
-           "\nв надежде, что теперь с ним будет проще договориться.", specifications.NATURE],
+            "\nв надежде, что теперь с ним будет проще договориться.", specifications.NATURE],
            ["Вызову его на дуэль. Проигравший отдает ценный предмет.", specifications.ATHLETICS],
            ["Так или иначе решу вопрос дипломатическим способом.", specifications.PERSUASION],
            ["Намекну, что отдать предмет - самый безобидный вариант для него и его семьи.", specifications.BULLYING]]
 
 answer4 = [["Спрошу у неё не потеряла ли она что-то.", specifications.INSIGHT],
            ["Прикарманю найденное добро и благополучно покину аллею.", specifications.HANDSLEIGHT],
-           ["Подбегу к ней, торжественно вручу потерянную вещь и, поцеловав её руку, приглашу на свидание!", specifications.BARD],
-           ["Возьму вознаграждение за находку, оставшуюся сумму верну девушке.", specifications.CHEATNG],
+           ["Подбегу к ней, торжественно вручу потерянную вещь и, поцеловав её руку, приглашу на свидание!",
+            specifications.BARD],
+           ["Возьму вознаграждение за находку, оставшуюся сумму верну девушке, сказав, что там столько и было.",
+            specifications.CHEATNG],
            ["Вспомню догматы своей религии и поступлю в соответствии с ними.", specifications.RELIGION],
            ["Известный мне фамильный герб выдает в девушке дворянку. "
-           "\nЭта сумма малая потеря для неё, пусть деньги достанутся тому, кому они нужнее.", specifications.HISTORY]]
+            "\nЭта сумма малая потеря для неё, пусть деньги достанутся тому, кому они нужнее.", specifications.HISTORY]]
 
 answer5 = [["Буду держаться неподалеку, чтобы вовремя оказать помощь пострадавшим.", specifications.MEDICINE],
            ["Вмешаюсь в разговор со словами: 'Что за шум, а драки нет? Сейчас устрою'", specifications.ATHLETICS],
            ["Скроюсь с того места, вдруг и меня привлекут?", specifications.STEALTH],
            ["Отвлеку бандитов на себя. В паркуре мне нет равных!", specifications.ACROBATICS],
            ["Прикинусь одним из них и прибегу с криками: 'Пацаны, шухер!'", specifications.CHEATNG],
-           ["С угрожающим видом встану между парнем и бандитами и посмотрю хватит ли теперь у них смелости.", specifications.BULLYING]]
+           ["С угрожающим видом встану между парнем и бандитами и посмотрю хватит ли теперь у них смелости.",
+            specifications.BULLYING]]
 
-answer6 = [["Попробую расположить их к себе, у меня как раз осталась куриная ножка с обеда.", specifications.ANIMALSTREATMENT],
-           ["Рыба гниет с головы, так что сначала убью вожака и самых крупных, а мелочь сама разбежится.", specifications.SURVIVAL],
-           ["Сделаю через них сальто, выбравшись из окружения, взберусь на дерево и сбегу, прыгая по кронам.", specifications.ACROBATICS],
-           ["Я был готов к этому! Теперь у зверюг нет шансов!", specifications.PERCEPTION],
-           ["Выход есть всегда и, возможно, в этот раз мне на него укажет мой покровитель.", specifications.RELIGION],
-           ["Воспользуюсь огненной магией, чтобы напугать их, все животные боятся огня.", specifications.MAGIC]]
+answer6 = [
+    ["Попробую расположить их к себе, у меня как раз осталась куриная ножка с обеда.", specifications.ANIMALSTREATMENT],
+    ["Рыба гниет с головы, так что сначала убью вожака и самых крупных, а мелочь сама разбежится.",
+     specifications.SURVIVAL],
+    ["Сделаю через них сальто, выбравшись из окружения, взберусь на дерево и сбегу, прыгая по кронам.",
+     specifications.ACROBATICS],
+    ["Я был готов к этому! Теперь у зверюг нет шансов!", specifications.PERCEPTION],
+    ["Выход есть всегда и, возможно, в этот раз мне на него укажет мой покровитель.", specifications.RELIGION],
+    ["Воспользуюсь огненной магией, чтобы напугать их, все животные боятся огня.", specifications.MAGIC]]
 
 answers = [answer1, answer2, answer3, answer4, answer5, answer6]
 
@@ -142,12 +170,13 @@ class Window(QMainWindow):
         super(Window, self).__init__()
         self.setWindowTitle("Экспертная система. "
                             "Создание класса в настольной игре D&D")
-        self.setGeometry(300, 200, 1000, 700)
+        self.move(300, 200)
+        self.setFixedSize(1000, 700)
         self.addClassWindow = AddClassWindow(self)
         self.deleteClassWindow = DeleteClassWindow(self)
         self.editclassWindow = EditClassWindow(self)
         self.clientAnswers = [specifications.NONE, specifications.NONE, specifications.NONE,
-                        specifications.NONE, specifications.NONE, specifications.NONE]
+                              specifications.NONE, specifications.NONE, specifications.NONE]
 
         self.description = QtWidgets.QLabel(self)
         self.description.move(275, 250)
@@ -339,7 +368,8 @@ class Window(QMainWindow):
             count = 0
             for i in range(1, len(row)):
                 for j in range(len(self.clientAnswers)):
-                    if self.clientAnswers[j] != specifications.NONE and self.clientAnswers[j] == getSpecification(row[i]):
+                    if self.clientAnswers[j] != specifications.NONE and self.clientAnswers[j] == getSpecification(
+                            row[i]):
                         count += i
             results[row[0]] = count
         orDict = OrderedDict(sorted(results.items(), key=lambda item: item[1], reverse=True))
@@ -366,7 +396,8 @@ class Window(QMainWindow):
                     for index in range(6):
                         count = 0
                         for i in range(1, len(row)):
-                            if self.clientAnswers[index] != specifications.NONE and self.clientAnswers[index] == getSpecification(row[i]):
+                            if self.clientAnswers[index] != specifications.NONE and self.clientAnswers[
+                                index] == getSpecification(row[i]):
                                 count += i
                         info = info + "Вопрос " + str(index + 1) + ": " + self.clientAnswers[index].value + " +" + str(
                             count) + "\n"
@@ -376,7 +407,7 @@ class Window(QMainWindow):
         self.info.setText(info)
         self.result.setText(resultStr)
         self.result.show()
-        self.info.setFixedHeight(16*(3 + classCount*8))
+        self.info.setFixedHeight(16 * (3 + classCount * 8))
         self.info.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         self.info.show()
         self.scroll_area.show()
@@ -425,7 +456,8 @@ class AddClassWindow(QtWidgets.QWidget):
         super(AddClassWindow, self).__init__()
         self.parentWindow = parent
         self.setWindowTitle("Создание класса")
-        self.setGeometry(600, 350, 500, 510)
+        self.move(600, 350)
+        self.setFixedSize(500, 510)
 
         self.newClass = QtWidgets.QLabel(self)
         self.newClass.setText("Имя нового класса:")
@@ -440,16 +472,29 @@ class AddClassWindow(QtWidgets.QWidget):
                       QtWidgets.QLabel(self), QtWidgets.QLabel(self)]
         for i in range(10):
             self.score[i].setText("Характеристика для " + str(i + 1) + " баллов:")
-            self.score[i].move(40, 60 + 40*i)
+            self.score[i].move(40, 60 + 40 * i)
             self.score[i].setFixedWidth(250)
         self.score[0].setText("Характеристика для 1 балла:")
 
-        self.answers = [QtWidgets.QComboBox(self), QtWidgets.QComboBox(self), QtWidgets.QComboBox(self), QtWidgets.QComboBox(self),
-                        QtWidgets.QComboBox(self), QtWidgets.QComboBox(self), QtWidgets.QComboBox(self), QtWidgets.QComboBox(self),
+        self.answers = [QtWidgets.QComboBox(self), QtWidgets.QComboBox(self), QtWidgets.QComboBox(self),
+                        QtWidgets.QComboBox(self),
+                        QtWidgets.QComboBox(self), QtWidgets.QComboBox(self), QtWidgets.QComboBox(self),
+                        QtWidgets.QComboBox(self),
                         QtWidgets.QComboBox(self), QtWidgets.QComboBox(self)]
-        for i in range (10):
-            self.answers[i].move(250, 60 + 40*i)
+        for i in range(10):
+            self.answers[i].move(250, 60 + 40 * i)
             self.addAnswer(self.answers[i])
+
+        self.answers[0].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[0].currentIndex()))
+        self.answers[1].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[1].currentIndex()))
+        self.answers[2].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[2].currentIndex()))
+        self.answers[3].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[3].currentIndex()))
+        self.answers[4].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[4].currentIndex()))
+        self.answers[5].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[5].currentIndex()))
+        self.answers[6].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[6].currentIndex()))
+        self.answers[7].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[7].currentIndex()))
+        self.answers[8].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[8].currentIndex()))
+        self.answers[9].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[9].currentIndex()))
 
         self.save = QtWidgets.QPushButton(self)
         self.save.move(40, 460)
@@ -490,6 +535,8 @@ class AddClassWindow(QtWidgets.QWidget):
         self.className.clear()
         for answer in self.answers:
             answer.setCurrentIndex(0)
+            for i in range(18):
+                answer.model().item(i).setEnabled(True)
 
 
 class DeleteClassWindow(QtWidgets.QWidget):
@@ -497,7 +544,8 @@ class DeleteClassWindow(QtWidgets.QWidget):
         super(DeleteClassWindow, self).__init__()
         self.parentWindow = parent
         self.setWindowTitle("Удаление класса")
-        self.setGeometry(600, 350, 350, 130)
+        self.move(600, 350)
+        self.setFixedSize(350, 130)
 
         self.deleteText = QtWidgets.QLabel(self)
         self.deleteText.setText("Выберите класс для удаления:")
@@ -533,7 +581,8 @@ class EditClassWindow(QtWidgets.QWidget):
         super(EditClassWindow, self).__init__()
         self.parentWindow = parent
         self.setWindowTitle("Редактирование таблицы")
-        self.setGeometry(600, 350, 500, 550)
+        self.move(600, 350)
+        self.setFixedSize(500, 550)
 
         self.editDescription = QtWidgets.QLabel(self)
         self.editDescription.setText("Выберите класс для редактирования:")
@@ -561,18 +610,46 @@ class EditClassWindow(QtWidgets.QWidget):
             self.score[i].setFixedWidth(250)
         self.score[0].setText("Характеристика для 1 балла:")
 
-        self.answers = [QtWidgets.QComboBox(self), QtWidgets.QComboBox(self), QtWidgets.QComboBox(self), QtWidgets.QComboBox(self),
-                        QtWidgets.QComboBox(self), QtWidgets.QComboBox(self), QtWidgets.QComboBox(self), QtWidgets.QComboBox(self),
+        self.answers = [QtWidgets.QComboBox(self), QtWidgets.QComboBox(self), QtWidgets.QComboBox(self),
+                        QtWidgets.QComboBox(self),
+                        QtWidgets.QComboBox(self), QtWidgets.QComboBox(self), QtWidgets.QComboBox(self),
+                        QtWidgets.QComboBox(self),
                         QtWidgets.QComboBox(self), QtWidgets.QComboBox(self)]
         for i in range(10):
             self.answers[i].move(250, 100 + 40 * i)
             self.addAnswer(self.answers[i])
+
+        self.answers[0].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[0].currentIndex()))
+        self.answers[0].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[0].currentIndex()))
+        self.answers[1].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[1].currentIndex()))
+        self.answers[2].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[2].currentIndex()))
+        self.answers[3].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[3].currentIndex()))
+        self.answers[4].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[4].currentIndex()))
+        self.answers[5].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[5].currentIndex()))
+        self.answers[6].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[6].currentIndex()))
+        self.answers[7].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[7].currentIndex()))
+        self.answers[8].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[8].currentIndex()))
+        self.answers[9].currentIndexChanged[int].connect(lambda: comboChanged(self, self.answers[9].currentIndex()))
 
         self.save = QtWidgets.QPushButton(self)
         self.save.move(40, 500)
         self.save.setFixedWidth(200)
         self.save.setText("Сохранить класс")
         self.save.clicked.connect(self.saveAnswer)
+
+    def comboChanged(self, answer):
+        if answer == 0:
+            return
+        selected = []
+        for i in range(10):
+            if self.answers[i].currentIndex() != 0:
+                selected.insert(len(selected), self.answers[i].currentIndex())
+        for i in range(10):
+            for j in range(18):
+                if isSelectedHas(selected, j):
+                    self.answers[i].model().item(j).setEnabled(False)
+                else:
+                    self.answers[i].model().item(j).setEnabled(True)
 
     def addAnswer(self, answer):
         for specification in specifications:
@@ -594,7 +671,8 @@ class EditClassWindow(QtWidgets.QWidget):
         answer10 = self.answers[9].currentText()
         cursor.execute("""UPDATE [Классы] SET [1 score] = ?, [2 score] = ?, [3 score] = ?, [4 score] = ?, 
         [5 score] = ?, [6 score] = ?, [7 score] = ?, [8 score] = ?, [9 score] = ?, [10 score] = ? WHERE Class = ?""",
-                       (answer1, answer2, answer3, answer4, answer5, answer6, answer7, answer8, answer9, answer10, className))
+                       (answer1, answer2, answer3, answer4, answer5, answer6, answer7, answer8, answer9, answer10,
+                        className))
         db.commit()
         for answer in self.answers:
             answer.setCurrentIndex(0)
@@ -610,6 +688,8 @@ class EditClassWindow(QtWidgets.QWidget):
         self.editClass.setCurrentIndex(0)
         for answer in self.answers:
             answer.setCurrentIndex(0)
+            for i in range(18):
+                answer.model().item(i).setEnabled(True)
 
 
 def application():
