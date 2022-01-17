@@ -22,7 +22,6 @@ def comboChanged(self, answer):
     if answer == 0:
         return
     selected = []
-    print("!!")
     for i in range(10):
         if self.answers[i].currentIndex() != 0:
             selected.insert(len(selected), self.answers[i].currentIndex())
