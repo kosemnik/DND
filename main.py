@@ -2,75 +2,13 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 import sys
-import sqlite3
-from enum import Enum
 from PyQt5.QtCore import Qt
 from collections import OrderedDict
 
-
-class Specifications(Enum):
-    NONE = "-"
-    ATHLETICS = "Атлетика"
-    ACROBATICS = "Акробатика"
-    HANDSLEIGHT = "Ловкость рук"
-    STEALTH = "Скрытность"
-    MAGIC = "Магия"
-    HISTORY = "История"
-    INVESTIGATION = "Расследование"
-    NATURE = "Природа"
-    RELIGION = "Религия"
-    ANIMALSTREATMENT = "Обращение с животными"
-    INSIGHT = "Проницательность"
-    MEDICINE = "Медицина"
-    PERCEPTION = "Восприятие"
-    SURVIVAL = "Выживание"
-    CHEATNG = "Обман"
-    BULLYING = "Запугивание"
-    PERSUASION = "Убеждение"
-    BARD = "Бард"
-
-
-specifications = Specifications
-
-
-def getSpecification(specification):
-    if specification == "-":
-        return specifications.NONE
-    if specification == "Атлетика":
-        return specifications.ATHLETICS
-    if specification == "Акробатика":
-        return specifications.ACROBATICS
-    if specification == "Ловкость рук":
-        return specifications.HANDSLEIGHT
-    if specification == "Скрытность":
-        return specifications.STEALTH
-    if specification == "Магия":
-        return specifications.MAGIC
-    if specification == "История":
-        return specifications.HISTORY
-    if specification == "Расследование":
-        return specifications.INVESTIGATION
-    if specification == "Природа":
-        return specifications.NATURE
-    if specification == "Религия":
-        return specifications.RELIGION
-    if specification == "Обращение с животными":
-        return specifications.ANIMALSTREATMENT
-    if specification == "Проницательность":
-        return specifications.INSIGHT
-    if specification == "Медицина":
-        return specifications.MEDICINE
-    if specification == "Восприятие":
-        return specifications.PERCEPTION
-    if specification == "Выживание":
-        return specifications.SURVIVAL
-    if specification == "Обман":
-        return specifications.CHEATNG
-    if specification == "Запугивание":
-        return specifications.BULLYING
-    if specification == "Выступление":
-        return specifications.PERFORMANCE
-    return specifications.PERSUASION
+from Answers import Answers
+from DBHelper import DBHelper
+from Questions import Questions
+from Specifications import Specification
 
 
 def isSelectedHas(selected, item):
@@ -96,93 +34,30 @@ def comboChanged(self, answer):
                 self.answers[i].model().item(j).setEnabled(True)
 
 
-db = sqlite3.connect('Classes.db')
-cursor = db.cursor()
-
-questions = ["В путешествии Вы встретили раненого монстра. Ваша первая мысль?",
-             "На Ваших глазах невинного осудили,  обязав выплатить огромный штраф. Ваши действия?",
-             "Вам поручили достать некий предмет у человека, что усердно не хочет его отдавать. "
-             "\nТак же упомянули, что не стоит применять насилие. Ваши действия?",
-             "Как-то идя по улице, Вы нашли кошелек с приличной суммой денег и неподалеку от него увидели девушку, "
-             "\nкоторая суетливо просматривала аллею в поисках чего-то. Что Вы сделаете?",
-             "Проходя по ночным улицам города мимо одного из переулков, Вы замечаете как несколько "
-             "\nбандитов пристают к парнишке. Что Вы будете делать?",
-             "Двигаясь по лесу, Вы обнаруживаете себя окруженным большой стаей диких и крупных волков. "
-             "\nКак лучше с ними сражаться?"]
-
-answer1 = [["Я помогу бедному созданию восстановиться.", specifications.MEDICINE],
-           ["Раненый? Это значит, что сокровища рядом будет легче забрать!", specifications.INVESTIGATION],
-           ["Попытаюсь найти следы того, кто его ранил, и выследить его.", specifications.SURVIVAL],
-           ["Отлично! Из его частей можно сделать ценные ингредиенты.", specifications.NATURE],
-           ["Возможно, сейчас это существо будет более уязвимым к моим заклинаниям.", specifications.MAGIC],
-           ["Лучше буду держаться подальше, это может быть ловушка.", specifications.PERCEPTION]]
-
-answer2 = [["Дам денег в долг.", specifications.INSIGHT],
-           ["Подлечу на своём скакуне, перекину бедолагу через седло и "
-            "\nгалопом унесусь в закат. Пусть попробуют догонят!", specifications.ANIMALSTREATMENT],
-           ["Предложу подать апелляцию и свою помощь в ее подготовке.", specifications.HISTORY],
-           ["Невиновность еще нужно доказать. Впрочем, разберусь по ситуации.", specifications.INVESTIGATION],
-           ["Попробую найти компромисс.", specifications.PERSUASION],
-           ["Прокляну.", specifications.MAGIC]]
-
-answer3 = [["Попытаюсь уговорить отдать предмет, если не получится, то сворую его.", specifications.HANDSLEIGHT],
-           ["Проберусь в его дом, незаметно возьму предмет, а затем также "
-            "\nнезаметно верну, когда потребность в нём отпадёт.", specifications.STEALTH],
-           ["Угощу его расслабляющим чаем из трав, которые собрал недавно, "
-            "\nв надежде, что теперь с ним будет проще договориться.", specifications.NATURE],
-           ["Вызову его на дуэль. Проигравший отдает ценный предмет.", specifications.ATHLETICS],
-           ["Так или иначе решу вопрос дипломатическим способом.", specifications.PERSUASION],
-           ["Намекну, что отдать предмет - самый безобидный вариант для него и его семьи.", specifications.BULLYING]]
-
-answer4 = [["Спрошу у неё не потеряла ли она что-то.", specifications.INSIGHT],
-           ["Прикарманю найденное добро и благополучно покину аллею.", specifications.HANDSLEIGHT],
-           ["Подбегу к ней, торжественно вручу потерянную вещь и, поцеловав её руку, приглашу на свидание!",
-            specifications.BARD],
-           ["Возьму вознаграждение за находку, оставшуюся сумму верну девушке, сказав, что там столько и было.",
-            specifications.CHEATNG],
-           ["Вспомню догматы своей религии и поступлю в соответствии с ними.", specifications.RELIGION],
-           ["Известный мне фамильный герб выдает в девушке дворянку. "
-            "\nЭта сумма малая потеря для неё, пусть деньги достанутся тому, кому они нужнее.", specifications.HISTORY]]
-
-answer5 = [["Буду держаться неподалеку, чтобы вовремя оказать помощь пострадавшим.", specifications.MEDICINE],
-           ["Вмешаюсь в разговор со словами: 'Что за шум, а драки нет? Сейчас устрою'", specifications.ATHLETICS],
-           ["Скроюсь с того места, вдруг и меня привлекут?", specifications.STEALTH],
-           ["Отвлеку бандитов на себя. В паркуре мне нет равных!", specifications.ACROBATICS],
-           ["Прикинусь одним из них и прибегу с криками: 'Пацаны, шухер!'", specifications.CHEATNG],
-           ["С угрожающим видом встану между парнем и бандитами и посмотрю хватит ли теперь у них смелости.",
-            specifications.BULLYING]]
-
-answer6 = [
-    ["Попробую расположить их к себе, у меня как раз осталась куриная ножка с обеда.", specifications.ANIMALSTREATMENT],
-    ["Рыба гниет с головы, так что сначала убью вожака и самых крупных, а мелочь сама разбежится.",
-     specifications.SURVIVAL],
-    ["Сделаю через них сальто, выбравшись из окружения, взберусь на дерево и сбегу, прыгая по кронам.",
-     specifications.ACROBATICS],
-    ["Я был готов к этому! Теперь у зверюг нет шансов!", specifications.PERCEPTION],
-    ["Выход есть всегда и, возможно, в этот раз мне на него укажет мой покровитель.", specifications.RELIGION],
-    ["Воспользуюсь огненной магией, чтобы напугать их, все животные боятся огня.", specifications.MAGIC]]
-
-answers = [answer1, answer2, answer3, answer4, answer5, answer6]
+specifications = Specification()
+dbHelper = DBHelper()
+answers = Answers(specifications.specifications)
+questions = Questions().questions
 
 
 class Window(QMainWindow):
     def __init__(self):
         super(Window, self).__init__()
         self.setWindowTitle("Экспертная система. "
-                            "Создание класса в настольной игре D&D")
+                            "Экспертная система по подбору D&D классов")
         self.move(300, 200)
         self.setFixedSize(1000, 700)
         self.addClassWindow = AddClassWindow(self)
         self.deleteClassWindow = DeleteClassWindow(self)
         self.editclassWindow = EditClassWindow(self)
-        self.clientAnswers = [specifications.NONE, specifications.NONE, specifications.NONE,
-                              specifications.NONE, specifications.NONE, specifications.NONE]
+        self.clientAnswers = [specifications.specifications.NONE, specifications.specifications.NONE,
+                              specifications.specifications.NONE, specifications.specifications.NONE,
+                              specifications.specifications.NONE, specifications.specifications.NONE]
 
         self.description = QtWidgets.QLabel(self)
         self.description.move(275, 250)
         self.description.setFixedWidth(500)
-        self.description.setText("Эта программа преназначена для создания класса"
-                                 "в настольной игре D&D")
+        self.description.setText("Эта программа предназначена для подбора D&D классов")
 
         self.btnSurvey = QtWidgets.QPushButton(self)
         self.btnSurvey.move(250, 350)
@@ -267,8 +142,7 @@ class Window(QMainWindow):
         self.table.setFixedWidth(900)
         self.table.setFixedHeight(500)
         self.table.setColumnCount(11)
-        cursor.execute("SELECT * FROM `Классы`")
-        rows = cursor.fetchall()
+        rows = dbHelper.getAll()
         self.table.setRowCount(len(rows))
         self.table.setHorizontalHeaderLabels(["Класс", "1 балл", "2 балла", "3 балла", "4 балла", "5 баллов",
                                               "6 баллов", "7 баллов", "8 баллов", "9 баллов", "10 баллов"])
@@ -310,7 +184,7 @@ class Window(QMainWindow):
         self.question.setText(questions[0])
         for index in range(6):
             self.answers[index].show()
-            self.answers[index].setText(answers[0][index][0])
+            self.answers[index].setText(answers.answers[0][index][0])
         self.count.show()
         self.count.setText(str(self.questionNumber + 1) + "/6")
 
@@ -335,14 +209,14 @@ class Window(QMainWindow):
         self.scroll_area.hide()
 
     def answerTap(self, btnNumber):
-        self.clientAnswers[self.questionNumber] = answers[self.questionNumber][btnNumber][1]
+        self.clientAnswers[self.questionNumber] = answers.answers[self.questionNumber][btnNumber][1]
         self.questionNumber += 1
         if self.questionNumber >= 6:
             self.getResult()
             return
         self.question.setText(questions[self.questionNumber])
         for index in range(6):
-            self.answers[index].setText(answers[self.questionNumber][index][0])
+            self.answers[index].setText(answers.answers[self.questionNumber][index][0])
         self.count.setText(str(self.questionNumber + 1) + "/6")
 
     def getResult(self):
@@ -354,22 +228,21 @@ class Window(QMainWindow):
 
         results = {}
         info = "\n"
-        if self.clientAnswers[3] == specifications.BARD:
+        if self.clientAnswers[3] == specifications.specifications.BARD:
             results["Бард"] = 1000
             info = "Бард: вы выбрали в 4 вопросе ответ для класса Бард\n\n"
-            self.clientAnswers[3] = specifications.NONE
+            self.clientAnswers[3] = specifications.specifications.NONE
         else:
             results["Бард"] = 0
-        cursor.execute("SELECT * FROM `Классы`")
-        rows = cursor.fetchall()
+        rows = dbHelper.getAll()
         for row in rows:
             if row[0] == "Бард":
                 continue
             count = 0
             for i in range(1, len(row)):
                 for j in range(len(self.clientAnswers)):
-                    if self.clientAnswers[j] != specifications.NONE and self.clientAnswers[j] == getSpecification(
-                            row[i]):
+                    if self.clientAnswers[j] != specifications.specifications.NONE and \
+                            self.clientAnswers[j] == specifications.getSpecification(row[i]):
                         count += i
             results[row[0]] = count
         orDict = OrderedDict(sorted(results.items(), key=lambda item: item[1], reverse=True))
@@ -389,6 +262,8 @@ class Window(QMainWindow):
             if orDict[key] == 0:
                 break
             for row in rows:
+                if key == "Бард":
+                    continue
                 if key == row[0]:
                     if orDict[row[0]] == 0:
                         continue
@@ -396,8 +271,8 @@ class Window(QMainWindow):
                     for index in range(6):
                         count = 0
                         for i in range(1, len(row)):
-                            if self.clientAnswers[index] != specifications.NONE and self.clientAnswers[
-                                index] == getSpecification(row[i]):
+                            if self.clientAnswers[index] != specifications.specifications.NONE \
+                                    and self.clientAnswers[index] == specifications.getSpecification(row[i]):
                                 count += i
                         info = info + "Вопрос " + str(index + 1) + ": " + self.clientAnswers[index].value + " +" + str(
                             count) + "\n"
@@ -440,8 +315,7 @@ class Window(QMainWindow):
         while self.table.rowCount() > 0:
             self.table.removeRow(0)
         self.table.setColumnCount(11)
-        cursor.execute("SELECT * FROM [Классы]")
-        rows = cursor.fetchall()
+        rows = dbHelper.getAll()
         self.table.setRowCount(len(rows))
         self.table.setHorizontalHeaderLabels(["Класс", "1 балл", "2 балла", "3 балла", "4 балла", "5 баллов",
                                               "6 баллов", "7 баллов", "8 баллов", "9 баллов", "10 баллов"])
@@ -503,29 +377,16 @@ class AddClassWindow(QtWidgets.QWidget):
         self.save.clicked.connect(self.saveAnswer)
 
     def addAnswer(self, answer):
-        for specification in specifications:
-            if specification.value != Specifications.BARD.value:
+        for specification in specifications.specifications:
+            if specification.value != specifications.specifications.BARD.value:
                 answer.addItem(specification.value)
         answer.setCurrentIndex(0)
 
     def saveAnswer(self):
-        className = self.className.text()
-        answer1 = self.answers[0].currentText()
-        answer2 = self.answers[1].currentText()
-        answer3 = self.answers[2].currentText()
-        answer4 = self.answers[3].currentText()
-        answer5 = self.answers[4].currentText()
-        answer6 = self.answers[5].currentText()
-        answer7 = self.answers[6].currentText()
-        answer8 = self.answers[7].currentText()
-        answer9 = self.answers[8].currentText()
-        answer10 = self.answers[9].currentText()
-        values = (className, answer1, answer2, answer3, answer4, answer5,
-                  answer6, answer7, answer8, answer9, answer10)
-        sqlite_insert_query = """INSERT INTO [Классы]
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
-        cursor.execute(sqlite_insert_query, values)
-        db.commit()
+        dbHelper.addItem(self.className.text(), self.answers[0].currentText(), self.answers[1].currentText(),
+                         self.answers[2].currentText(), self.answers[3].currentText(), self.answers[4].currentText(),
+                         self.answers[5].currentText(), self.answers[6].currentText(), self.answers[7].currentText(),
+                         self.answers[8].currentText(), self.answers[9].currentText())
         self.parentWindow.updateTable()
         for i in range(10):
             self.addAnswer(self.answers[i])
@@ -563,15 +424,13 @@ class DeleteClassWindow(QtWidgets.QWidget):
 
     def updateQComboBox(self):
         self.answer.clear()
-        cursor.execute("SELECT * FROM `Классы`")
-        rows = cursor.fetchall()
+        rows = dbHelper.getAll()
         for i in range(len(rows)):
             self.answer.addItem(rows[i][0])
         self.answer.setCurrentIndex(0)
 
     def deleteClass(self):
-        cursor.execute("""DELETE FROM [Классы] WHERE Class = ?""", (self.answer.currentText(),))
-        db.commit()
+        dbHelper.deleteItem(self.answer.currentText())
         self.parentWindow.updateTable()
         self.hide()
 
@@ -590,8 +449,8 @@ class EditClassWindow(QtWidgets.QWidget):
         self.editDescription.setFixedWidth(250)
         self.editClass = QtWidgets.QComboBox(self)
         self.editClass.move(300, 20)
-        cursor.execute("SELECT * FROM [Классы]")
-        rows = cursor.fetchall()
+
+        rows = dbHelper.getAll()
         for i in range(len(rows)):
             self.editClass.addItem(rows[i][0])
         self.editClass.setCurrentIndex(0)
@@ -652,28 +511,16 @@ class EditClassWindow(QtWidgets.QWidget):
                     self.answers[i].model().item(j).setEnabled(True)
 
     def addAnswer(self, answer):
-        for specification in specifications:
-            if specification.value != Specifications.BARD.value:
+        for specification in specifications.specifications:
+            if specification.value != specifications.specifications.BARD.value:
                 answer.addItem(specification.value)
         answer.setCurrentIndex(0)
 
     def saveAnswer(self):
-        className = self.editClass.currentText()
-        answer1 = self.answers[0].currentText()
-        answer2 = self.answers[1].currentText()
-        answer3 = self.answers[2].currentText()
-        answer4 = self.answers[3].currentText()
-        answer5 = self.answers[4].currentText()
-        answer6 = self.answers[5].currentText()
-        answer7 = self.answers[6].currentText()
-        answer8 = self.answers[7].currentText()
-        answer9 = self.answers[8].currentText()
-        answer10 = self.answers[9].currentText()
-        cursor.execute("""UPDATE [Классы] SET [1 score] = ?, [2 score] = ?, [3 score] = ?, [4 score] = ?, 
-        [5 score] = ?, [6 score] = ?, [7 score] = ?, [8 score] = ?, [9 score] = ?, [10 score] = ? WHERE Class = ?""",
-                       (answer1, answer2, answer3, answer4, answer5, answer6, answer7, answer8, answer9, answer10,
-                        className))
-        db.commit()
+        dbHelper.updateItem(self.answers[0].currentText(), self.answers[1].currentText(), self.answers[2].currentText(),
+                            self.answers[3].currentText(), self.answers[4].currentText(), self.answers[5].currentText(),
+                            self.answers[6].currentText(), self.answers[7].currentText(), self.answers[8].currentText(),
+                            self.answers[9].currentText(), self.editClass.currentText())
         for answer in self.answers:
             answer.setCurrentIndex(0)
         self.parentWindow.updateTable()
@@ -681,8 +528,7 @@ class EditClassWindow(QtWidgets.QWidget):
 
     def updateQComboBox(self):
         self.editClass.clear()
-        cursor.execute("SELECT * FROM `Классы`")
-        rows = cursor.fetchall()
+        rows = dbHelper.getAll()
         for i in range(len(rows)):
             self.editClass.addItem(rows[i][0])
         self.editClass.setCurrentIndex(0)
@@ -701,4 +547,4 @@ def application():
 
 if __name__ == "__main__":
     application()
-db.close()
+dbHelper.close()
